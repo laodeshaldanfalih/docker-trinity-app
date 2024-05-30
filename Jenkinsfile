@@ -44,11 +44,16 @@ pipeline {
                 sh 'docker compose run --rm artisan test'
             }
         }
-    }
-    post {
-        always {
-            sh 'docker compose down --remove-orphans -v'
-            sh 'docker compose ps'
+        stage("Run Application") {
+            steps {
+                sh 'docker compose run --rm artisan serve --host=0.0.0.0 --port=8000'
+            }
         }
     }
+    // post {
+    //     always {
+    //         sh 'docker compose down --remove-orphans -v'
+    //         sh 'docker compose ps'
+    //     }
+    // }
 }
