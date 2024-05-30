@@ -46,7 +46,7 @@ pipeline {
         }
         stage("Run Application") {
             steps {
-                sh 'docker compose run --rm artisan serve --host=0.0.0.0 --port=8000'
+                sh 'php artisan serve'
             }
         }
     }
