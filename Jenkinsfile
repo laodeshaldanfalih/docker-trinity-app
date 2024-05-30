@@ -34,12 +34,8 @@ pipeline {
         }
         stage("Populate .env file") {
             steps {
-                dir("/Users/laodeshaldanfalih/.jenkins/workspace/envs/trinity-app-test") {
-                    copy(
-                        filter: '**/.env',
-                        flatten: true,
-                        into: env.WORKSPACE
-                    )
+                script {
+                    sh 'cp /Users/laodeshaldanfalih/.jenkins/workspace/envs/trinity-app-test/.env ${WORKSPACE}/.env'
                 }
             }
         }
