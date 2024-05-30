@@ -34,7 +34,7 @@ pipeline {
         }
         stage("Populate .env file") {
             steps {
-                dir("/var/lib/jenkins/workspace/envs/laravel-test") {
+                dir("/Users/laodeshaldanfalih/.jenkins/workspace/envs/trinity-app-test") {
                     fileOperations([fileCopyOperation(excludes: '', flattenFiles: true, includes: '.env', targetLocation: "${WORKSPACE}")])
                 }
             }
