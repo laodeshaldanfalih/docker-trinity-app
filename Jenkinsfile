@@ -44,16 +44,11 @@ pipeline {
                 sh 'docker compose run --rm artisan test'
             }
         }
-        stage("Run Application") {
-            steps {
-                sh 'php artisan serve'
-            }
+    }
+    post {
+        always {
+            sh 'docker compose down --remove-orphans -v'
+            sh 'docker compose ps'
         }
     }
-    // post {
-    //     always {
-    //         sh 'docker compose down --remove-orphans -v'
-    //         sh 'docker compose ps'
-    //     }
-    // }
 }
