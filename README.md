@@ -37,9 +37,9 @@
     <br />
     <!-- <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a> -->
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    <a href="https://github.com/laodeshaldanfalih/docker-trinity-app/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    <a href="https://github.com/laodeshaldanfalih/docker-trinity-app/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
   </p>
 </div>
 
@@ -123,13 +123,13 @@ _After donwloading all prequities, you can follow this installation steps:_
     ```
 4. Innitialize laravel project
     ```sh
-    docker compose run composer install 
+    docker compose run composer install
     ```
 5. Innitialize laravel key
     ```sh
     docker compose run artisan key:generate
     ```
-6. Innitialize laravel migration    
+6. Innitialize laravel migration
     ```sh
     docker compose run artisan migrate
     ```
