@@ -37,9 +37,9 @@
     <br />
     <!-- <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a> -->
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    <a href="https://github.com/laodeshaldanfalih/docker-trinity-app/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    <a href="https://github.com/laodeshaldanfalih/docker-trinity-app/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
   </p>
 </div>
 
@@ -113,13 +113,33 @@ _After donwloading all prequities, you can follow this installation steps:_
     ```sh
     git clone https://github.com/laodeshaldanfalih/docker-trinity-app
     ```
-2. Go to your clone directory
+2. Go to the clone directory
     ```sh
-    cd ./yourCloneDirectory
+    cd docker-trinity-app
     ```
-3. Innitialize you docker images
+3. Make .env file automatically from .env.example
     ```sh
-    docker compose up
+    cp .env.example .env
+    ```
+4. Innitialize laravel project
+    ```sh
+    docker compose run composer install
+    ```
+5. Innitialize laravel key
+    ```sh
+    docker compose run artisan key:generate
+    ```
+6. Innitialize laravel migration
+    ```sh
+    docker compose run artisan migrate
+    ```
+7. Innitialize docker images (tart program)
+    ```sh
+    docker compose up -d
+    ```
+8. Stop docker images (stop program)
+    ```sh
+    docker compose down
     ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
