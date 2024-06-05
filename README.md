@@ -113,9 +113,9 @@ _After donwloading all prequities, you can follow this installation steps:_
     ```sh
     git clone https://github.com/laodeshaldanfalih/docker-trinity-app
     ```
-2. Go to your clone directory
+2. Go to the clone directory
     ```sh
-    cd ./yourCloneDirectory
+    cd docker-trinity-app
     ```
 3. Make .env file automatically from .env.example
     ```sh
@@ -133,11 +133,14 @@ _After donwloading all prequities, you can follow this installation steps:_
     ```sh
     docker compose run artisan migrate
     ```
-7. Innitialize you docker images (tart program)
+7. Innitialize docker images (tart program)
     ```sh
     docker compose up -d
     ```
 8. Stop docker images (stop program)
+    ```sh
+    docker compose down
+    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
