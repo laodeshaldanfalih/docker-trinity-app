@@ -63,7 +63,7 @@ pipeline {
                 sh 'scp -v -o StrictHostKeyChecking=no -i ${keyfile} /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app/artifact.zip ec2-user@13.236.92.137:/home/ec2-user/artifact'
             }
             sshagent(credentials: ['aws-ec2']) {
-                sh 'ssh -o StrictHostKeyChecking=no ec2-user@313.236.92.137 unzip -o /home/ec2-user/artifact/artifact.zip -d /var/www/html'
+                sh 'ssh -o StrictHostKeyChecking=no ec2-user@13.236.92.137 unzip -o /home/ec2-user/artifact/artifact.zip -d /var/www/html'
                 script {
                     try {
                         sh 'ssh -o StrictHostKeyChecking=no ec2-user@13.236.92.137 sudo chmod 777 /var/www/html/storage -R'
