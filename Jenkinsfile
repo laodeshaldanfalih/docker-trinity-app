@@ -55,6 +55,11 @@ pipeline {
         }
     }
     post {
+        success{
+            sh 'cd /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app'
+            sh 'rm -rf artifact.zip'
+            sh 'zip -r artifact.zip . -x "*node_modules**"'
+        }
         always {
             sh 'docker compose down --remove-orphans -v'
             sh 'docker compose ps'
