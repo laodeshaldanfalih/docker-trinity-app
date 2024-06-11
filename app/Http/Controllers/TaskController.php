@@ -62,4 +62,3 @@ class TaskController extends Controller
                         ->with('success', 'Task deleted successfully.');
     }
 }
-

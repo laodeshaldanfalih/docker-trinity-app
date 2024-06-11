@@ -10,7 +10,8 @@
             <form action="{{ route('tasks.update', $task->id) }}" method="POST">
 
                 <div class="form-floating mt-2 p-auto">
-                    <textarea class="form-control" placeholder="Description" id="description" name="description" style="height: 256px" disabled>{{ $task->description }}</textarea>
+                    <textarea class="form-control" placeholder="Description" id="description" name="description" style="height: 256px"
+                        disabled>{{ $task->description }}</textarea>
                     <label for="description">Description</label>
                 </div>
                 <a type="submit" class="btn btn-primary mt-5 text-white" href="{{ route('tasks.index') }}">Back to list</a>

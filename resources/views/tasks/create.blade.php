@@ -18,8 +18,7 @@
                     <label for="title">Title:</label>
                 </div>
                 <div class="form-floating mt-2 p-auto">
-                    <textarea class="form-control" placeholder="Description" id="description" name="description"
-                    style="height: 256px"></textarea>
+                    <textarea class="form-control" placeholder="Description" id="description" name="description" + style="height: 256px"></textarea>
                     <label for="description">Description</label>
                 </div>
 

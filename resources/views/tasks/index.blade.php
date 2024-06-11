@@ -18,9 +18,11 @@
         <div class="row d-flex flex-wrap justify-content-around pt-2 pb-5 m-2">
             <ul class="list-group col-md-10">
                 @foreach ($tasks as $task)
-                    <li class="list-group-item position-relative task-item mb-3" onclick="location.href='{{ route('tasks.show', $task->id) }}'">
+                    <li class="list-group-item position-relative task-item mb-3"
+                        onclick="location.href='{{ route('tasks.show', $task->id) }}'">
                         <h5 href="{{ route('tasks.show', $task->id) }}">{{ $task->title }}</h5>
-                        <a type="submit" class="btn btn-warning btn-sm text-white edit-button" href="{{ route('tasks.edit', $task->id) }}">Edit</a>
+                        <a type="submit" class="btn btn-warning btn-sm text-white edit-button"
+                            href="{{ route('tasks.edit', $task->id) }}">Edit</a>
                         <p class="text-wrap text-truncate">{{ $task->description }}</p>
                         <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" class="d-inline">
                             @csrf
@@ -33,5 +35,4 @@
             </ul>
         </div>
     </div>
-
 @endsection
