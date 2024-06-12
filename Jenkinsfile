@@ -1,6 +1,29 @@
 pipeline {
     agent any
+
+    environment {
+        TF_VAR_aws_region = 'ap-southeast-2'
+        TF_VAR_instance_ami = 'ami-080660c9757080771'
+        TF_VAR_instance_type = 't2.micro'
+        TF_VAR_key_name = 'key-for-ec2'
+    }
+
     stages {
+        stage("Terraform Init") {
+            steps {
+                script {
+                    sh 'terraform --version'
+                    sh 'terraform init'
+                }
+            }
+        }
+        stage("Terraform Apply") {
+            steps {
+                script {
+                    sh 'terraform apply -auto-approve'
+                }
+            }
+        }
         stage("Verify tooling") {
             steps {
                 sh '''
@@ -58,13 +81,6 @@ pipeline {
                 sh 'docker compose run artisan migrate'
             }
         }
-        // stage("Populate .env file") {
-        //     steps {
-        //         script {
-        //             sh 'cp /Users/laodeshaldanfalih/.jenkins/workspace/envs/trinity-app-test/.env ${WORKSPACE}/.env'
-        //         }
-        //     }
-        // }
         stage("Run Tests") {
             steps {
                 sh 'docker compose run --rm artisan test'
