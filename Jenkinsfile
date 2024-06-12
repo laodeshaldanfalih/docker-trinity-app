@@ -38,7 +38,7 @@ pipeline {
         }
         stage("Run Copy Script") {
     steps {
-        bat '"C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Trinity-Pipeline\\copy_env.bat"'
+        bat 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Trinity-Pipeline\\copy_env.bat'
     }
 }
         stage("Start Docker") {
