@@ -36,18 +36,35 @@ pipeline {
                 sh 'docker compose ps'
             }
         }
+        stage("Populate .env file") {
+            steps {
+                script {
+                    sh 'cp .env.example .env'
+                }
+            }
+        }
         stage("Run Composer Install") {
             steps {
                 sh 'docker compose run --rm composer install'
             }
         }
-        stage("Populate .env file") {
+        stage("Run Laravel Key") {
             steps {
-                script {
-                    sh 'cp /Users/laodeshaldanfalih/.jenkins/workspace/envs/trinity-app-test/.env ${WORKSPACE}/.env'
-                }
+                sh 'docker compose run artisan key:generate'
             }
         }
+        stage("Run Laravel Migration") {
+            steps {
+                sh 'sudo docker compose run artisan migrate'
+            }
+        }
+        // stage("Populate .env file") {
+        //     steps {
+        //         script {
+        //             sh 'cp /Users/laodeshaldanfalih/.jenkins/workspace/envs/trinity-app-test/.env ${WORKSPACE}/.env'
+        //         }
+        //     }
+        // }
         stage("Run Tests") {
             steps {
                 sh 'docker compose run --rm artisan test'
@@ -76,9 +93,9 @@ pipeline {
                 }
             }
         }
-        always {
-            sh 'docker compose down --remove-orphans -v'
-            sh 'docker compose ps'
-        }
+        // always {
+        //     sh 'docker compose down --remove-orphans -v'
+        //     sh 'docker compose ps'
+        // }
     }
 }
