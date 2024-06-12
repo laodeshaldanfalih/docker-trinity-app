@@ -41,6 +41,15 @@ pipeline {
                 bat 'docker-compose run --rm composer install'
             }
         }
+
+        stage("Populate .env file") {
+            steps {
+                dir("C:/ProgramData/Jenkins/.jenkins/workspace/envs/docker-trinity-app") {
+                    fileOperations([fileCopyOperation(excludes: '', flattenFiles: true, includes: '.env', targetLocation: "${WORKSPACE}")])
+                }
+            }
+        }
+
         // stage("Populate .env file") {
         //     steps {
         //         script {
@@ -53,11 +62,11 @@ pipeline {
         //         bat 'docker-compose run --rm artisan key:generate'
         //     }
         // }
-        // stage("Run Tests") {
-        //     steps {
-        //         bat 'docker-compose run --rm artisan test'
-        //     }
-        // }
+        stage("Run Tests") {
+            steps {
+                bat 'docker-compose run --rm artisan test'
+            }
+        }
     }
     post {
         // success {
