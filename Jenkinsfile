@@ -19,7 +19,7 @@ pipeline {
                 }
             }
         }
-	stage("Clear old /var/www/html") {
+	    stage("Clear old /var/www/html") {
             steps {
                 sshagent(credentials: ['aws-ec2']) {
                     sh '''
