@@ -30,11 +30,17 @@ pipeline {
                 }
             }
         }
-        stage("Debug Directory Contents") {
-            steps {
-                bat 'dir "C:\\Pengembangan Sistem Operasi\\docker-trinity-app\\"'
+        stage("Debug") {
+             steps {
+                bat 'cd'
+                bat 'dir'
             }
         }
+        stage("Run Copy Script") {
+    steps {
+        bat '"C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Trinity-Pipeline\\copy_env.bat"'
+    }
+}
         stage("Start Docker") {
             steps {
                 bat 'docker-compose up -d'
