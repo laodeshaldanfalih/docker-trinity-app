@@ -45,7 +45,8 @@ pipeline {
         stage("Populate .env file") {
             steps {
                 script {
-                    bat 'copy C:\Pengembangan Sistem Operasi\docker-trinity-app\.env'
+                    bat 'copy C:\\Pengembangan Sistem Operasi\\docker-trinity-app\\.env'
+'
                 }
             }
         }
