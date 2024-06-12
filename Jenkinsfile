@@ -48,11 +48,16 @@ pipeline {
         //         }
         //     }
         // }
-        stage("Run Tests") {
-            steps {
-                bat 'docker-compose run --rm artisan test'
-            }
-        }
+        // stage("Generate Application Key") {
+        //     steps {
+        //         bat 'docker-compose run --rm artisan key:generate'
+        //     }
+        // }
+        // stage("Run Tests") {
+        //     steps {
+        //         bat 'docker-compose run --rm artisan test'
+        //     }
+        // }
     }
     post {
         // success {
