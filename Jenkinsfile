@@ -55,7 +55,7 @@ pipeline {
         }
         stage("Run Laravel Migration") {
             steps {
-                sh 'sudo docker compose run artisan migrate'
+                sh 'docker compose run artisan migrate'
             }
         }
         // stage("Populate .env file") {
