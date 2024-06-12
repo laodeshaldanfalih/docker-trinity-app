@@ -47,10 +47,8 @@ pipeline {
                 script {
                     // Copy .env.example to .env
                     bat 'copy %WORKSPACE%\\.env.example %WORKSPACE%\\.env'
-                    // Change permissions of .env file
-                    bat 'docker-compose run --rm php chmod 644 /var/www/html/.env'
-                    // Generate application key
-                    bat 'docker-compose run --rm artisan key:generate'
+                    // Ensure the .env file has the correct permissions
+                    bat 'docker-compose run --rm php bash -c "chmod 777 /var/www/html/.env && php artisan key:generate"'
                 }
             }
         }
