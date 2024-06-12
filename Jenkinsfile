@@ -23,7 +23,7 @@ pipeline {
             steps {
                 sshagent(credentials: ['aws-ec2']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ec2-user@3.27.114.56 sudo rm -rf /var/www/html
+                        ssh -o StrictHostKeyChecking=no ec2-user@13.236.92.137 sudo rm -rf /var/www/html
                     '''
                 }
             }
