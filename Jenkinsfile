@@ -3,27 +3,27 @@ pipeline {
     stages {
         stage("Verify tooling") {
             steps {
-                sh '''
+                bat '''
                     docker info
                     docker version
-                    docker compose version
+                    docker-compose version
                 '''
             }
         }
-        stage("Verify SSH connection to server") {
-            steps {
-                sshagent(credentials: ['aws-ec2']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no ec2-user@3.27.114.56 whoami
-                    '''
-                }
-            }
-        }
+        // stage("Verify SSH connection to server") {
+        //     steps {
+        //         sshagent(credentials: ['aws-ec2']) {
+        //             bat '''
+        //                 "C:\\Program Files\\Git\\usr\\bin\\ssh.exe" -o StrictHostKeyChecking=no ec2-user@3.27.114.56 whoami
+        //             '''
+        //         }
+        //     }
+        // }
         stage("Clear all running docker containers") {
             steps {
                 script {
                     try {
-                        sh 'docker rm -f $(docker ps -a -q)'
+                        bat 'docker rm -f $(docker ps -a -q)'
                     } catch (Exception e) {
                         echo 'No running container to clear up...'
                     }
@@ -32,40 +32,40 @@ pipeline {
         }
         stage("Start Docker") {
             steps {
-                sh 'make up'
-                sh 'docker compose ps'
+                bat 'make up'
+                bat 'docker-compose ps'
             }
         }
         stage("Run Composer Install") {
             steps {
-                sh 'docker compose run --rm composer install'
+                bat 'docker-compose run --rm composer install'
             }
         }
-        stage("Populate .env file") {
-            steps {
-                script {
-                    sh 'cp /Users/laodeshaldanfalih/.jenkins/workspace/envs/trinity-app-test/.env ${WORKSPACE}/.env'
-                }
-            }
-        }
+        // stage("Populate .env file") {
+        //     steps {
+        //         script {
+        //             bat 'copy C:\\Users\\laodeshaldanfalih\\.jenkins\\workspace\\envs\\trinity-app-test\\.env %WORKSPACE%\\.env'
+        //         }
+        //     }
+        // }
         stage("Run Tests") {
             steps {
-                sh 'docker compose run --rm artisan test'
+                bat 'docker-compose run --rm artisan test'
             }
         }
     }
     post {
-        success{
-            sh 'cd /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app'
-            sh 'rm -rf artifact.zip'
-            sh 'zip -r artifact.zip . -x "*node_modules**"'
-            withCredentials([sshUserPrivateKey(credentialsId: "aws-ec2", keyFileVariable: 'keyfile')]) {
-                sh 'scp -v -o StrictHostKeyChecking=no -i ${keyfile} /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app/artifact.zip ec2-user@3.27.114.56 :/home/ec2-user/artifact'
-            }
-        }
+        // success {
+        //     bat 'cd C:\\Users\\laodeshaldanfalih\\.jenkins\\workspace\\trinity-app'
+        //     bat 'del /f /q artifact.zip'
+        //     bat 'tar -a -c -f artifact.zip . --exclude=*node_modules**'
+        //     withCredentials([sshUserPrivateKey(credentialsId: "aws-ec2", keyFileVariable: 'keyfile')]) {
+        //         bat 'scp -v -o StrictHostKeyChecking=no -i %keyfile% C:\\Users\\laodeshaldanfalih\\.jenkins\\workspace\\trinity-app\\artifact.zip ec2-user@3.27.114.56:/home/ec2-user/artifact'
+        //     }
+        // }
         always {
-            sh 'docker compose down --remove-orphans -v'
-            sh 'docker compose ps'
+            bat 'docker-compose down --remove-orphans -v'
+            bat 'docker-compose ps'
         }
     }
 }
