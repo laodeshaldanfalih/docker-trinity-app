@@ -23,7 +23,9 @@ pipeline {
             steps {
                 script {
                     try {
-                        bat 'docker rm -f $(docker ps -a -q)'
+                        bat '''
+                            FOR /F "tokens=*" %%i IN ('docker ps -a -q') DO docker rm -f %%i
+                        '''
                     } catch (Exception e) {
                         echo 'No running container to clear up...'
                     }
