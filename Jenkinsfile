@@ -14,7 +14,7 @@ pipeline {
             steps {
                 sshagent(credentials: ['aws-ec2']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ec2-user@13.236.92.137 whoami
+                        ssh -o StrictHostKeyChecking=no ec2-user@3.107.10.5 whoami
                     '''
                 }
             }
@@ -60,16 +60,16 @@ pipeline {
             sh 'rm -rf artifact.zip'
             sh 'zip -r artifact.zip . -x "*node_modules**"'
             withCredentials([sshUserPrivateKey(credentialsId: "aws-ec2", keyFileVariable: 'keyfile')]) {
-                sh 'scp -v -o StrictHostKeyChecking=no -i ${keyfile} /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app/artifact.zip ec2-user@13.236.92.137:/home/ec2-user/artifact'
+                sh 'scp -v -o StrictHostKeyChecking=no -i ${keyfile} /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app/artifact.zip ec2-user@3.107.10.5:/home/ubuntu/artifact'
             }
             sshagent(credentials: ['aws-ec2']) {
                 sh '''
-                    ssh -o StrictHostKeyChecking=no ec2-user@13.236.92.137 'sudo mkdir -p /var/www/html'
-                    ssh -o StrictHostKeyChecking=no ec2-user@13.236.92.137 'unzip -o /home/ec2-user/artifact/artifact.zip -d /var/www/html'
+                    ssh -o StrictHostKeyChecking=no ec2-user@3.107.10.5 'sudo mkdir -p /var/www/html'
+                    ssh -o StrictHostKeyChecking=no ec2-user@3.107.10.5 'unzip -o /home/ubuntu/artifact/artifact.zip -d /var/www/html'
                 '''
                 script {
                     try {
-                        sh 'ssh -o StrictHostKeyChecking=no ec2-user@13.236.92.137 sudo chmod 777 /var/www/html/storage -R'
+                        sh 'ssh -o StrictHostKeyChecking=no ec2-user@3.107.10.5 sudo chmod 777 /var/www/html/storage -R'
                     } catch (Exception e) {
                         echo 'Some file permissions could not be updated.'
                     }
