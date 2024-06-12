@@ -42,12 +42,14 @@ pipeline {
             }
         }
 
-        // stage("Populate .env file") {
-        //     steps {
-        //         script {
-        //             bat 'copy C:\Pengembangan Sistem Operasi\docker-trinity-app\.env'
-        //         }
-        //     }
+        stage("Populate .env file") {
+            steps {
+                dir("C:\ProgramData\Jenkins\.jenkins\workspace\envs\docker-trinity-app") {
+                    fileOperations([fileCopyOperation(excludes: '', flattenFiles: true, includes: '.env', targetLocation: "${WORKSPACE}")])
+                }
+            }
+        }
+
         // }
         stage("Run Tests") {
             steps {
@@ -56,14 +58,6 @@ pipeline {
         }
     }
     post {
-        // success {
-        //     bat 'cd C:\\Users\\laodeshaldanfalih\\.jenkins\\workspace\\trinity-app'
-        //     bat 'del /f /q artifact.zip'
-        //     bat 'tar -a -c -f artifact.zip . --exclude=*node_modules**'
-        //     withCredentials([sshUserPrivateKey(credentialsId: "aws-ec2", keyFileVariable: 'keyfile')]) {
-        //         bat 'scp -v -o StrictHostKeyChecking=no -i %keyfile% C:\\Users\\laodeshaldanfalih\\.jenkins\\workspace\\trinity-app\\artifact.zip ec2-user@3.27.114.56:/home/ec2-user/artifact'
-        //     }
-        // }
         always {
             bat 'docker-compose down --remove-orphans -v'
             bat 'docker-compose ps'
