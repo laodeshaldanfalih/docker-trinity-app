@@ -41,13 +41,14 @@ pipeline {
                 bat 'docker-compose run --rm composer install'
             }
         }
-        // stage("Populate .env file") {
-        //     steps {
-        //         script {
-        //             bat 'copy C:\\Users\\laodeshaldanfalih\\.jenkins\\workspace\\envs\\trinity-app-test\\.env %WORKSPACE%\\.env'
-        //         }
-        //     }
-        // }
+
+        stage("Populate .env file") {
+            steps {
+                script {
+                    bat 'copy C:\Pengembangan Sistem Operasi\docker-trinity-app\.env'
+                }
+            }
+        }
         stage("Run Tests") {
             steps {
                 bat 'docker-compose run --rm artisan test'
