@@ -44,13 +44,12 @@ pipeline {
 
         stage("Populate .env file") {
             steps {
-                dir("C:\ProgramData\Jenkins\.jenkins\workspace\envs\docker-trinity-app") {
+                dir("C:/ProgramData/Jenkins/.jenkins/workspace/envs/docker-trinity-app") {
                     fileOperations([fileCopyOperation(excludes: '', flattenFiles: true, includes: '.env', targetLocation: "${WORKSPACE}")])
                 }
             }
         }
 
-        // }
         stage("Run Tests") {
             steps {
                 bat 'docker-compose run --rm artisan test'
