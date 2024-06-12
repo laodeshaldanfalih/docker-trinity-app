@@ -42,10 +42,13 @@ pipeline {
             }
         }
 
-        stage("Populate .env file") {
+        stage("Setup Environment") {
             steps {
-                dir("C:/ProgramData/Jenkins/.jenkins/workspace/envs/docker-trinity-app") {
-                    fileOperations([fileCopyOperation(excludes: '', flattenFiles: true, includes: '.env', targetLocation: "${WORKSPACE}")])
+                script {
+                    // Copy .env.example to .env
+                    bat 'copy %WORKSPACE%\\.env.example %WORKSPACE%\\.env'
+                    // Generate application key
+                    bat 'docker-compose run --rm artisan key:generate'
                 }
             }
         }
