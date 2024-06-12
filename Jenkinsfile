@@ -32,7 +32,7 @@ pipeline {
         }
         stage("Start Docker") {
             steps {
-                bat 'docker-compose up -d'
+                bat 'make up'
                 bat 'docker-compose ps'
             }
         }
