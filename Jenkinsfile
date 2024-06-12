@@ -14,7 +14,7 @@ pipeline {
             steps {
                 sshagent(credentials: ['aws-ec2']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ec2-user@3.27.114.56 whoami
+                        ssh -o StrictHostKeyChecking=no ubuntu@3.107.10.5 whoami
                     '''
                 }
             }
@@ -36,18 +36,35 @@ pipeline {
                 sh 'docker compose ps'
             }
         }
+        stage("Populate .env file") {
+            steps {
+                script {
+                    sh 'cp .env.example .env'
+                }
+            }
+        }
         stage("Run Composer Install") {
             steps {
                 sh 'docker compose run --rm composer install'
             }
         }
-        stage("Populate .env file") {
+        stage("Run Laravel Key") {
             steps {
-                script {
-                    sh 'cp /Users/laodeshaldanfalih/.jenkins/workspace/envs/trinity-app-test/.env ${WORKSPACE}/.env'
-                }
+                sh 'docker compose run artisan key:generate'
             }
         }
+        stage("Run Laravel Migration") {
+            steps {
+                sh 'docker compose run artisan migrate'
+            }
+        }
+        // stage("Populate .env file") {
+        //     steps {
+        //         script {
+        //             sh 'cp /Users/laodeshaldanfalih/.jenkins/workspace/envs/trinity-app-test/.env ${WORKSPACE}/.env'
+        //         }
+        //     }
+        // }
         stage("Run Tests") {
             steps {
                 sh 'docker compose run --rm artisan test'
@@ -60,7 +77,20 @@ pipeline {
             sh 'rm -rf artifact.zip'
             sh 'zip -r artifact.zip . -x "*node_modules**"'
             withCredentials([sshUserPrivateKey(credentialsId: "aws-ec2", keyFileVariable: 'keyfile')]) {
-                sh 'scp -v -o StrictHostKeyChecking=no -i ${keyfile} /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app/artifact.zip ec2-user@3.27.114.56 :/home/ec2-user/artifact'
+                sh 'scp -v -o StrictHostKeyChecking=no -i ${keyfile} /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app/artifact.zip ubuntu@3.107.10.5:/home/ubuntu/artifact'
+            }
+            sshagent(credentials: ['aws-ec2']) {
+                sh '''
+                    ssh -o StrictHostKeyChecking=no ubuntu@3.107.10.5 'sudo mkdir -p /var/www/html'
+                    ssh -o StrictHostKeyChecking=no ubuntu@3.107.10.5 'unzip -o /home/ubuntu/artifact/artifact.zip -d /var/www/html'
+                '''
+                script {
+                    try {
+                        sh 'ssh -o StrictHostKeyChecking=no ubuntu@3.107.10.5 sudo chmod 777 /var/www/html/storage -R'
+                    } catch (Exception e) {
+                        echo 'Some file permissions could not be updated.'
+                    }
+                }
             }
         }
         always {
