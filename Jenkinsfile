@@ -19,15 +19,6 @@ pipeline {
                 }
             }
         }
-	    stage("Clear old /var/www/html") {
-            steps {
-                sshagent(credentials: ['aws-ec2']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no ec2-user@13.236.92.137 sudo rm -rf /var/www/html
-                    '''
-                }
-            }
-        }
         stage("Clear all running docker containers") {
             steps {
                 script {
