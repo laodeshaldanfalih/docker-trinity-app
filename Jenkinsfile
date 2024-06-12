@@ -30,17 +30,6 @@ pipeline {
                 }
             }
         }
-        stage("Debug") {
-             steps {
-                bat 'cd'
-                bat 'dir'
-            }
-        }
-        stage("Run Copy Script") {
-    steps {
-        bat 'C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Trinity-Pipeline\\copy_env.bat'
-    }
-}
         stage("Start Docker") {
             steps {
                 bat 'docker-compose up -d'
@@ -53,13 +42,13 @@ pipeline {
             }
         }
 
-        stage("Populate .env file") {
-            steps {
-                script {
-                    bat 'copy_env.bat'
-                }
-            }
-        }
+        // stage("Populate .env file") {
+        //     steps {
+        //         script {
+        //             bat 'copy C:\Pengembangan Sistem Operasi\docker-trinity-app\.env'
+        //         }
+        //     }
+        // }
         stage("Run Tests") {
             steps {
                 bat 'docker-compose run --rm artisan test'
