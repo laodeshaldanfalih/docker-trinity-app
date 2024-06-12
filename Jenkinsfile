@@ -46,7 +46,6 @@ pipeline {
             steps {
                 script {
                     bat 'copy C:\\Pengembangan Sistem Operasi\\docker-trinity-app\\.env'
-'
                 }
             }
         }
