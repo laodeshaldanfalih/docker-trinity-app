@@ -15,8 +15,8 @@ yarn-error.log
 **/.terraform/*
 
 # .tfstate files
-*.tfstate
-*.tfstate.*
+# *.tfstate
+# *.tfstate.*
 
 # Crash log files
 crash.log
