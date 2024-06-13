@@ -2,6 +2,21 @@ provider "aws" {
   region = "ap-southeast-2"
 }
 
+variable "instance_ami" {
+  description = "The AMI ID for the EC2 instance"
+  type        = string
+}
+
+variable "instance_type" {
+  description = "The instance type for the EC2 instance"
+  type        = string
+}
+
+variable "key_name" {
+  description = "The key pair name for SSH access"
+  type        = string
+}
+
 resource "aws_instance" "my_ec2_instance" {
   ami           = var.instance_ami
   instance_type = var.instance_type
