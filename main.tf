@@ -3,9 +3,9 @@ provider "aws" {
 }
 
 resource "aws_instance" "my_ec2_instance" {
-  ami           = "ami-080660c9757080771"
-  instance_type = "t2.micro"
-  key_name      = "key-for-ec2"
+  ami           = var.instance_ami
+  instance_type = var.instance_type
+  key_name      = var.key_name
   tags = {
     Name = "trinity-app"
   }
@@ -22,8 +22,11 @@ resource "aws_instance" "my_ec2_instance" {
       type        = "ssh"
       user        = "ubuntu"
       private_key = file("~/.ssh/key-for-ec2.pem")
-      host        = aws_instance.my_ec2_instance.public_ip
+      host        = self.public_ip
     }
   }
 }
 
+output "public_ip" {
+  value = aws_instance.my_ec2_instance.public_ip
+}

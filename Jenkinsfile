@@ -21,6 +21,15 @@ pipeline {
             steps {
                 script {
                     sh 'terraform apply -auto-approve'
+                    sh 'terraform output -json > tf-output.json'
+                }
+            }
+        }
+        stage("Parse Terraform Output") {
+            steps {
+                script {
+                    def output = readJSON file: 'tf-output.json'
+                    env.PUBLIC_IP = output.public_ip.value
                 }
             }
         }
@@ -36,9 +45,9 @@ pipeline {
         stage("Verify SSH connection to server") {
             steps {
                 sshagent(credentials: ['aws-ec2']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@3.107.10.5 whoami
-                    '''
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ubuntu@${PUBLIC_IP} whoami
+                    """
                 }
             }
         }
@@ -88,21 +97,23 @@ pipeline {
         }
     }
     post {
-        success{
+        success {
             sh 'cd /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app'
             sh 'rm -rf artifact.zip'
             sh 'zip -r artifact.zip . -x "*node_modules**"'
             withCredentials([sshUserPrivateKey(credentialsId: "aws-ec2", keyFileVariable: 'keyfile')]) {
-                sh 'scp -v -o StrictHostKeyChecking=no -i ${keyfile} /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app/artifact.zip ubuntu@3.107.10.5:/home/ubuntu/artifact'
+                sh """
+                    scp -v -o StrictHostKeyChecking=no -i ${keyfile} /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app/artifact.zip ubuntu@${PUBLIC_IP}:/home/ubuntu/artifact
+                """
             }
             sshagent(credentials: ['aws-ec2']) {
-                sh '''
-                    ssh -o StrictHostKeyChecking=no ubuntu@3.107.10.5 'sudo mkdir -p /var/www/html'
-                    ssh -o StrictHostKeyChecking=no ubuntu@3.107.10.5 'unzip -o /home/ubuntu/artifact/artifact.zip -d /var/www/html'
-                '''
+                sh """
+                    ssh -o StrictHostKeyChecking=no ubuntu@${PUBLIC_IP} 'sudo mkdir -p /var/www/html'
+                    ssh -o StrictHostKeyChecking=no ubuntu@${PUBLIC_IP} 'unzip -o /home/ubuntu/artifact/artifact.zip -d /var/www/html'
+                """
                 script {
                     try {
-                        sh 'ssh -o StrictHostKeyChecking=no ubuntu@3.107.10.5 sudo chmod 777 /var/www/html/storage -R'
+                        sh "ssh -o StrictHostKeyChecking=no ubuntu@${PUBLIC_IP} sudo chmod 777 /var/www/html/storage -R"
                     } catch (Exception e) {
                         echo 'Some file permissions could not be updated.'
                     }
