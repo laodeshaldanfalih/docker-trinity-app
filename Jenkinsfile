@@ -54,13 +54,13 @@ pipeline {
 
         stage("Run Laravel Key") {
             steps {
-                sh 'docker compose run artisan key:generate'
+                bat 'docker compose run artisan key:generate'
             }
         }
 
         stage("Run Laravel Migration") {
             steps {
-                sh 'docker compose run artisan migrate'
+                bat 'docker compose run artisan migrate'
             }
         }
 
