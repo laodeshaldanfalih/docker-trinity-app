@@ -36,21 +36,35 @@ pipeline {
                 bat 'docker-compose ps'
             }
         }
+
+        stage("Setup Environment") {
+            steps {
+                script {
+                    // Copy .env.example to .env
+                    bat 'copy .env.example .env'
+                }
+            }
+        }
+
         stage("Run Composer Install") {
             steps {
                 bat 'docker-compose run --rm composer install'
             }
         }
 
-        stage("Setup Environment") {
+        stage("Run Laravel Key") {
             steps {
-                script {
-                    // Copy .env.example to .env
-                    bat 'copy %WORKSPACE%\\.env.example %WORKSPACE%\\.env'
-                    // Ensure the .env file has the correct permissions
-                    bat 'docker-compose run artisan key:generate'                }
+                sh 'docker compose run artisan key:generate'
             }
         }
+
+        stage("Run Laravel Migration") {
+            steps {
+                sh 'docker compose run artisan migrate'
+            }
+        }
+
+
 
         // stage("Populate .env file") {
         //     steps {
