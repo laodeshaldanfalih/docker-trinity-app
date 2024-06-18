@@ -102,13 +102,7 @@ pipeline {
         }
         stage('SonarQube analysis') {
             steps {
-                script {
-                    def dockerImage = docker.image('sonarsource/sonar-scanner-cli:latest')
-                    dockerImage.pull()
-                    dockerImage.inside("-e SONAR_HOST_URL=${env.SONARQUBE_URL} -e SONAR_LOGIN=${env.SONARQUBE_LOGIN} -v ${WORKSPACE}:/usr/src") {
-                        sh 'sonar-scanner'
-                    }
-                }
+                sh 'sonar-scanner'
             }
         }
     }
