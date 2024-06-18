@@ -2,10 +2,16 @@ pipeline {
     agent any
 
     environment {
+        //terraform
         TF_VAR_aws_region = 'ap-southeast-2'
         TF_VAR_instance_ami = 'ami-080660c9757080771'
         TF_VAR_instance_type = 't2.micro'
         TF_VAR_key_name = 'key-for-ec2'
+
+        // SonarQube
+        SCANNER_HOME = tool name: 'SonarQubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+        SONARQUBE_URL = 'http://sonarqube:9000' // Adjust the URL if SonarQube is running on a different port or host
+        SONARQUBE_LOGIN = credentials('sonarqube') // Replace with your actual credentials ID
     }
 
     stages {
@@ -93,6 +99,25 @@ pipeline {
         stage("Run Tests") {
             steps {
                 sh 'docker compose run --rm artisan test'
+            }
+        }
+        stage('SonarQube analysis') {
+            steps {
+                script {
+                    // Pull the SonarQube scanner image if not already present
+                    docker.image('sonarsource/sonar-scanner-cli:latest').pull()
+                }
+                script {
+                    // Run the SonarQube scanner inside a Docker container
+                    sh """
+                    docker run --rm \
+                    -e SONAR_HOST_URL=${env.SONARQUBE_URL} \
+                    -e SONAR_LOGIN=${env.SONARQUBE_LOGIN} \
+                    -v ${WORKSPACE}:/usr/src \
+                    sonarsource/sonar-scanner-cli:latest \
+                    sonar-scanner
+                    """
+                }
             }
         }
     }
