@@ -46,11 +46,25 @@ pipeline {
                 bat 'docker-compose run --rm artisan migrate'
             }
         }
+
+        stage("Populate .env file") {
+            steps {
+                dir("C:/ProgramData/Jenkins/.jenkins/workspace/envs/docker-trinity-app") {
+                    fileOperations([fileCopyOperation(excludes: '', flattenFiles: true, includes: '.env', targetLocation: "${WORKSPACE}")])
+                }
+            }
+        }
+
         // stage("Populate .env file") {
         //     steps {
         //         script {
         //             bat 'copy C:\\Users\\laodeshaldanfalih\\.jenkins\\workspace\\envs\\trinity-app-test\\.env %WORKSPACE%\\.env'
         //         }
+        //     }
+        // }
+        // stage("Generate Application Key") {
+        //     steps {
+        //         bat 'docker-compose run --rm artisan key:generate'
         //     }
         // }
         stage("Run Tests") {
