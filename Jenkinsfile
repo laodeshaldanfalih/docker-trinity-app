@@ -131,7 +131,7 @@ pipeline {
             }
         }
         always {
-            sh 'docker compose down --remove-orphans -v'
+            sh 'docker compose down --remove-orphans -v --exclude sonarqube'
             sh 'docker compose ps'
         }
     }
