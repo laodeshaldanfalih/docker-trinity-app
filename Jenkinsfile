@@ -2,14 +2,13 @@ pipeline {
     agent any
 
     environment {
-        //terraform
+        // Terraform
         TF_VAR_aws_region = 'ap-southeast-2'
         TF_VAR_instance_ami = 'ami-080660c9757080771'
         TF_VAR_instance_type = 't2.micro'
         TF_VAR_key_name = 'key-for-ec2'
 
         // SonarQube
-        SCANNER_HOME = tool name: 'SonarQubeScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
         SONARQUBE_URL = 'http://sonarqube:9000' // Adjust the URL if SonarQube is running on a different port or host
         SONARQUBE_LOGIN = credentials('sonarqube') // Replace with your actual credentials ID
     }
@@ -123,24 +122,26 @@ pipeline {
     }
     post {
         success {
-            sh 'cd /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app'
-            sh 'rm -rf artifact.zip'
-            sh 'zip -r artifact.zip . -x "*node_modules**"'
-            withCredentials([sshUserPrivateKey(credentialsId: "aws-ec2", keyFileVariable: 'keyfile')]) {
-                sh """
-                    scp -v -o StrictHostKeyChecking=no -i ${keyfile} /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app/artifact.zip ubuntu@${PUBLIC_IP}:/home/ubuntu/artifact
-                """
-            }
-            sshagent(credentials: ['aws-ec2']) {
-                sh """
-                    ssh -o StrictHostKeyChecking=no ubuntu@${PUBLIC_IP} 'sudo mkdir -p /var/www/html'
-                    ssh -o StrictHostKeyChecking=no ubuntu@${PUBLIC_IP} 'unzip -o /home/ubuntu/artifact/artifact.zip -d /var/www/html'
-                """
-                script {
-                    try {
-                        sh "ssh -o StrictHostKeyChecking=no ubuntu@${PUBLIC_IP} sudo chmod 777 /var/www/html/storage -R"
-                    } catch (Exception e) {
-                        echo 'Some file permissions could not be updated.'
+            node {
+                sh 'cd /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app'
+                sh 'rm -rf artifact.zip'
+                sh 'zip -r artifact.zip . -x "*node_modules**"'
+                withCredentials([sshUserPrivateKey(credentialsId: "aws-ec2", keyFileVariable: 'keyfile')]) {
+                    sh """
+                        scp -v -o StrictHostKeyChecking=no -i ${keyfile} /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app/artifact.zip ubuntu@${PUBLIC_IP}:/home/ubuntu/artifact
+                    """
+                }
+                sshagent(credentials: ['aws-ec2']) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ubuntu@${PUBLIC_IP} 'sudo mkdir -p /var/www/html'
+                        ssh -o StrictHostKeyChecking=no ubuntu@${PUBLIC_IP} 'unzip -o /home/ubuntu/artifact/artifact.zip -d /var/www/html'
+                    """
+                    script {
+                        try {
+                            sh "ssh -o StrictHostKeyChecking=no ubuntu@${PUBLIC_IP} sudo chmod 777 /var/www/html/storage -R"
+                        } catch (Exception e) {
+                            echo 'Some file permissions could not be updated.'
+                        }
                     }
                 }
             }
