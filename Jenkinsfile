@@ -60,7 +60,19 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh 'docker rm -f $(docker ps -a -q)'
+                        // Get all container IDs except the SonarQube and sonar-postgres containers
+                        def containersToRemove = sh(script: '''
+                            docker ps -a --format "{{.ID}} {{.Names}}" | \
+                            grep -Ev "sonarqube|sonar-postgres" | \
+                            awk '{print $1}'
+                        ''', returnStdout: true).trim()
+                        if (containersToRemove) {
+                            // Convert the list of container IDs to a single string separated by space
+                            def containerList = containersToRemove.split().join(' ')
+                            sh "docker rm -f ${containerList}"
+                        } else {
+                            echo 'No running container to clear up...'
+                        }
                     } catch (Exception e) {
                         echo 'No running container to clear up...'
                     }
@@ -131,7 +143,6 @@ pipeline {
             }
         }
         always {
-            sh 'docker compose down --remove-orphans -v --exclude sonarqube'
             sh 'docker compose ps'
         }
     }
