@@ -41,6 +41,11 @@ pipeline {
                 bat 'docker-compose run --rm composer install'
             }
         }
+        stage("Run Migrations") {
+            steps {
+                bat 'docker-compose run --rm artisan migrate'
+            }
+        }
         // stage("Populate .env file") {
         //     steps {
         //         script {
@@ -50,7 +55,7 @@ pipeline {
         // }
         stage("Run Tests") {
             steps {
-                bat 'docker-compose run --rm artisan test'
+                bat 'docker-compose run --rm artisan test --log-junit storage/test-results/results.xml'
             }
         }
     }
@@ -64,6 +69,8 @@ pipeline {
         //     }
         // }
         always {
+            junit 'storage/test-results/*.xml'
+            archiveArtifacts artifacts: 'storage/logs/laravel.log', allowEmptyArchive: true
             bat 'docker-compose down --remove-orphans -v'
             bat 'docker-compose ps'
         }
