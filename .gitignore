@@ -13,6 +13,7 @@ yarn-error.log
 
 # Local .terraform directories
 **/.terraform/*
+**/.scannerwork/*
 
 # .tfstate files
 # *.tfstate

@@ -117,6 +117,15 @@ pipeline {
                 sh 'sonar-scanner'
             }
         }
+        stage("Cleanup unused Directory") {
+            steps {
+                script {
+                    sh 'rm -rf .terraform'
+                    sh 'rm -rf .scannerwork'
+                }
+
+            }
+        }
     }
     post {
         success {
