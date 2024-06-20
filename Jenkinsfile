@@ -19,11 +19,12 @@ pipeline {
         //         }
         //     }
         // }
-        stage("Clear all running docker containers") {
+         stage("Clear all running docker containers") {
             steps {
                 script {
                     try {
-                        bat 'docker rm -f $(docker ps -a -q)'
+                        // Jalankan perintah bat untuk membersihkan kontainer Docker
+                        bat 'for /f "tokens=*" %%i in (\'docker ps -aq\') do docker rm -f %%i'
                     } catch (Exception e) {
                         echo 'No running container to clear up...'
                     }
