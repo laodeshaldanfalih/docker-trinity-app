@@ -49,7 +49,7 @@ pipeline {
 
         stage("Populate .env file") {
             steps {
-                dir(""C:/Pengembangan Sistem Operasi/docker-trinity-app/.env"") {
+                dir("C:/Pengembangan Sistem Operasi/docker-trinity-app/.env") {
                     fileOperations([fileCopyOperation(excludes: '', flattenFiles: true, includes: '.env', targetLocation: "${WORKSPACE}")])
                 }
             }
