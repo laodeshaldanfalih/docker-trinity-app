@@ -23,7 +23,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        bat 'docker rm -f $(docker ps -a -q)'
+                        bat 'docker ps -a -q | ForEach-Object { docker rm -f $_ }'
                     } catch (Exception e) {
                         echo 'No running container to clear up...'
                     }
