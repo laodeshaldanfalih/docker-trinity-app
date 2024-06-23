@@ -26,7 +26,7 @@ services:
       - laravel
 
   mysql:
-    image: mariadb:10.6
+    image: mysql
     container_name: mysql
     restart: unless-stopped
     tty: true

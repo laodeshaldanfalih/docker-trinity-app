@@ -1,6 +1,43 @@
 pipeline {
     agent any
+
+    environment {
+        // Terraform
+        TF_VAR_aws_region = 'ap-southeast-2'
+        TF_VAR_instance_ami = 'ami-080660c9757080771'
+        TF_VAR_instance_type = 't2.micro'
+        TF_VAR_key_name = 'key-for-ec2'
+
+        // SonarQube
+        SONARQUBE_URL = 'http://sonarqube:9000' // Adjust the URL if SonarQube is running on a different port or host
+        SONARQUBE_LOGIN = credentials('sonarqube') // Replace with your actual credentials ID
+    }
+
     stages {
+        stage("Terraform Init") {
+            steps {
+                script {
+                    sh 'terraform --version'
+                    sh 'terraform init'
+                }
+            }
+        }
+        stage("Terraform Apply") {
+            steps {
+                script {
+                    sh 'terraform apply -auto-approve'
+                    sh 'terraform output -json > tf-output.json'
+                }
+            }
+        }
+        stage("Parse Terraform Output") {
+            steps {
+                script {
+                    def output = readJSON file: 'tf-output.json'
+                    env.PUBLIC_IP = output.public_ip.value
+                }
+            }
+        }
         stage("Verify tooling") {
             steps {
                 sh '''
@@ -13,9 +50,9 @@ pipeline {
         stage("Verify SSH connection to server") {
             steps {
                 sshagent(credentials: ['aws-ec2']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@3.107.10.5 whoami
-                    '''
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ubuntu@${PUBLIC_IP} whoami
+                    """
                 }
             }
         }
@@ -23,7 +60,19 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh 'docker rm -f $(docker ps -a -q)'
+                        // Get all container IDs except the SonarQube and sonar-postgres containers
+                        def containersToRemove = sh(script: '''
+                            docker ps -a --format "{{.ID}} {{.Names}}" | \
+                            grep -Ev "sonarqube|sonar-postgres" | \
+                            awk '{print $1}'
+                        ''', returnStdout: true).trim()
+                        if (containersToRemove) {
+                            // Convert the list of container IDs to a single string separated by space
+                            def containerList = containersToRemove.split().join(' ')
+                            sh "docker rm -f ${containerList}"
+                        } else {
+                            echo 'No running container to clear up...'
+                        }
                     } catch (Exception e) {
                         echo 'No running container to clear up...'
                     }
@@ -58,35 +107,44 @@ pipeline {
                 sh 'docker compose run artisan migrate'
             }
         }
-        // stage("Populate .env file") {
-        //     steps {
-        //         script {
-        //             sh 'cp /Users/laodeshaldanfalih/.jenkins/workspace/envs/trinity-app-test/.env ${WORKSPACE}/.env'
-        //         }
-        //     }
-        // }
         stage("Run Tests") {
             steps {
                 sh 'docker compose run --rm artisan test'
             }
         }
+        stage('SonarQube analysis') {
+            steps {
+                sh 'sonar-scanner'
+            }
+        }
+        stage("Cleanup unused Directory") {
+            steps {
+                script {
+                    sh 'rm -rf .terraform'
+                    sh 'rm -rf .scannerwork'
+                }
+
+            }
+        }
     }
     post {
-        success{
+        success {
             sh 'cd /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app'
             sh 'rm -rf artifact.zip'
             sh 'zip -r artifact.zip . -x "*node_modules**"'
             withCredentials([sshUserPrivateKey(credentialsId: "aws-ec2", keyFileVariable: 'keyfile')]) {
-                sh 'scp -v -o StrictHostKeyChecking=no -i ${keyfile} /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app/artifact.zip ubuntu@3.107.10.5:/home/ubuntu/artifact'
+                sh """
+                    scp -v -o StrictHostKeyChecking=no -i ${keyfile} /Users/laodeshaldanfalih/.jenkins/workspace/trinity-app/artifact.zip ubuntu@${PUBLIC_IP}:/home/ubuntu/artifact
+                """
             }
             sshagent(credentials: ['aws-ec2']) {
-                sh '''
-                    ssh -o StrictHostKeyChecking=no ubuntu@3.107.10.5 'sudo mkdir -p /var/www/html'
-                    ssh -o StrictHostKeyChecking=no ubuntu@3.107.10.5 'unzip -o /home/ubuntu/artifact/artifact.zip -d /var/www/html'
-                '''
+                sh """
+                    ssh -o StrictHostKeyChecking=no ubuntu@${PUBLIC_IP} 'sudo mkdir -p /var/www/html'
+                    ssh -o StrictHostKeyChecking=no ubuntu@${PUBLIC_IP} 'unzip -o /home/ubuntu/artifact/artifact.zip -d /var/www/html'
+                """
                 script {
                     try {
-                        sh 'ssh -o StrictHostKeyChecking=no ubuntu@3.107.10.5 sudo chmod 777 /var/www/html/storage -R'
+                        sh "ssh -o StrictHostKeyChecking=no ubuntu@${PUBLIC_IP} sudo chmod 777 /var/www/html/storage -R"
                     } catch (Exception e) {
                         echo 'Some file permissions could not be updated.'
                     }
@@ -94,7 +152,6 @@ pipeline {
             }
         }
         always {
-            sh 'docker compose down --remove-orphans -v'
             sh 'docker compose ps'
         }
     }
