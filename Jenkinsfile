@@ -41,11 +41,7 @@ pipeline {
                 bat 'docker-compose run --rm composer install'
             }
         }
-        stage("Run Migrations") {
-            steps {
-                bat 'docker-compose run --rm artisan migrate'
-            }
-        }
+
 
         stage("Populate .env file") {
             steps {
@@ -54,6 +50,14 @@ pipeline {
                 }
             }
         }
+
+        stage("Run Migrations") {
+            steps {
+                bat 'docker-compose run --rm artisan migrate'
+            }
+        }
+
+
 
         // stage("Populate .env file") {
         //     steps {
