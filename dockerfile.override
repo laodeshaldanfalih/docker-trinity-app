@@ -1,0 +1,18 @@
+FROM php:8.0.20RC1-fpm-alpine3.16
+
+# Use ARG to accept USER and GID variables
+ARG USER=root
+ARG GID=1000
+
+# Create necessary directories
+RUN mkdir -p /var/www/html
+WORKDIR /var/www/html
+
+# Remove the conflicting group
+RUN delgroup dialout
+
+# Skip adding the conflicting group
+# RUN addgroup -g ${GID} --system ${USER}
+
+# Copy the rest of your Dockerfile instructions as needed
+# <Rest of your Dockerfile content>
