@@ -109,7 +109,7 @@ pipeline {
         }
         stage("Run Tests") {
             steps {
-                sh 'docker compose run --rm artisan test'
+                sh 'docker-compose run --rm artisan test --log-junit storage/test-results/results.xml'
             }
         }
         stage('SonarQube analysis') {
@@ -152,6 +152,8 @@ pipeline {
             }
         }
         always {
+            junit 'storage/test-results/*.xml'
+            archiveArtifacts artifacts: 'storage/logs/laravel.log', allowEmptyArchive: true
             sh 'docker compose ps'
         }
     }
