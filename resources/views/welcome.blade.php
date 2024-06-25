@@ -13,7 +13,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f0f4f8;
+            background: linear-gradient(135deg, #153677, #4e085f);
             color: #333;
         }
 
@@ -54,7 +54,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to Notes</h1>
+        <h1>Welcome to Trinity App</h1>
         <p>Write your to-do list and keep track of your tasks easily.</p>
         <a href="{{ url('/tasks') }}" class="btn">Get Started</a>
     </div>
