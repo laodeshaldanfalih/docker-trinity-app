@@ -7,6 +7,7 @@ pipeline {
         TF_VAR_instance_ami = 'ami-080660c9757080771'
         TF_VAR_instance_type = 't2.medium'
         TF_VAR_key_name = 'key-for-ec2'
+        TF_VAR_vpc_id = 'vpc-0d176e5f959b4a3bc'
 
         // SonarQube
         SONARQUBE_URL = 'http://sonarqube:9000' // Adjust the URL if SonarQube is running on a different port or host
@@ -56,7 +57,7 @@ pipeline {
                 }
             }
         }
-        stage("Clear all running docker containers") {
+        stage("Clear all running docker containers except SonarQube") {
             steps {
                 script {
                     try {
