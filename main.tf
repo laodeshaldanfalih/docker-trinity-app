@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "ap-southeast-2"
+  region = "us-east-1"
 }
 
 variable "instance_ami" {
@@ -36,7 +36,7 @@ resource "aws_instance" "my_ec2_instance" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      private_key = file("~/.ssh/key-for-ec2.pem")
+      private_key = file("C:/Users/afand/Downloads/key-for-ec2.pem")
       host        = self.public_ip
     }
   }

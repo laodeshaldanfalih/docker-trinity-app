@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         // Terraform
-        TF_VAR_aws_region = 'ap-southeast-2'
-        TF_VAR_instance_ami = 'ami-080660c9757080771'
+        TF_VAR_aws_region = 'us-east-1'
+        TF_VAR_instance_ami = 'ami-04b70fa74e45c3917'
         TF_VAR_instance_type = 't2.micro'
         TF_VAR_key_name = 'key-for-ec2'
 
