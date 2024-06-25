@@ -20,6 +20,7 @@
                 <div class="form-floating mt-2 p-auto">
                     <textarea class="form-control" placeholder="Edit Description" id="description" name="description" style="height: 256px">{{ $task->description }}</textarea>
                     <label for="description">Description:</label>
+                    <button type="submit" class="btn btn-primary mt-5 text-white">Update</button>
                 </div>
             </form>
         </div>
