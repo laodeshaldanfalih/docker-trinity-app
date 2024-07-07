@@ -5,7 +5,7 @@ pipeline {
         // Terraform
         TF_VAR_aws_region = 'ap-southeast-2'
         TF_VAR_instance_ami = 'ami-080660c9757080771'
-        TF_VAR_instance_type = 't2.medium'
+        TF_VAR_instance_type = 't2.micro'
         TF_VAR_key_name = 'key-for-ec2'
         TF_VAR_vpc_id = 'vpc-0d176e5f959b4a3bc'
 
